@@ -561,11 +561,20 @@ function animateCounter(){
   requestAnimationFrame(step);
 }
 let counterStarted = false;
+
+// Fetch real count from Google Sheet
+fetch(GOOGLE_SCRIPT_URL + '?action=count')
+  .then(res => res.json())
+  .then(data => {
+    if(data.count !== undefined) window._numaCount = data.count;
+  })
+  .catch(() => { window._numaCount = 4827; });
+
 const counterObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting && !counterStarted){
       counterStarted = true;
-      animateCounter();
+      animateCounter(window._numaCount || 4827);
     }
   });
 }, {threshold:0.5});
